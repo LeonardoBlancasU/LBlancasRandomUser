@@ -1,0 +1,70 @@
+﻿@Model Usuario
+@{
+    ViewBag.Title = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Usuarios = (List<object>)Session["Usuarios"];
+}
+
+<div class="container">
+    <div class="row">
+        <span id="lblSession"></span>
+    </div>
+    @if (TempData["Success"]!= null) 
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-all"> @TempData["Success"] </i>
+        </div>
+    }
+    <div class="row">
+        <button class="btn btn-danger" onclick="Limpiar()">Limpiar Usuarios</button>
+    </div>
+    <div class="row" id="Registros" name="Registros">
+        @if (Usuarios != null)
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <td>Nombre Completo</td>
+                        <td>Imagen</td>
+                        <td>Telefono</td>
+                        <td>Email</td>
+                        <td>Direccion Completa</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (ML.Usuario usuario in Usuarios)
+                    {
+                    <tr>
+                        <td>@usuario.name.title @usuario.name.first @usuario.name.last</td>
+                        <td><img src="@usuario.picture.large"/></td>
+                        <td>@usuario.phone</td>
+                        <td>@usuario.email</td>
+                        <td>@usuario.location.street.name @usuario.location.street.number @usuario.location.city @usuario.location.postcode @usuario.location.state @usuario.location.country</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.js">
+</script>
+
+<script>
+    function Limpiar() {
+           $.ajax({
+            type: 'POST',
+             url: '@Url.Action("LimpiarSession")',
+             success: function (result) {
+                 if (result.Correct) {
+                     $("#lblSession").addClass('bi bi-check-all alert alert-success').text('Session Limpiada Correctamente');
+                }
+             },
+                error: function (ex) {
+                alert('Failed.' + ex);
+                }
+           });
+        $("#Registros").empty();
+    }
+</script>
